@@ -206,9 +206,6 @@
     <ProjectReference Include="$(SolutionDir)raylib.vcxproj">
       <Project>{e89d61ac-55de-4482-afd4-df7242ebc859}</Project>
     </ProjectReference>
-    <ProjectReference Include="box2d.vcxproj">
-      <Project>{920f0b3f-ef11-4e35-b122-add482acdf15}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\resources.rc" />
