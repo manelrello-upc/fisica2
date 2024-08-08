@@ -21,6 +21,9 @@ public:
 
 public:
 
-	Texture background;
+	Texture background_normal;
+	Texture background_dawn;
+
+	bool drawDawnSky = false;
 
 };

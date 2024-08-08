@@ -22,7 +22,8 @@ bool ModuleGame::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	background = LoadTexture("Assets/sky.png");
+	background_normal = LoadTexture("Assets/sky.png");
+	background_dawn = LoadTexture("Assets/sky_dawn.png");
 
 	return ret;
 }
@@ -38,8 +39,19 @@ bool ModuleGame::CleanUp()
 // Update: draw background
 update_status ModuleGame::Update()
 {
-	
-	App->renderer->Draw(background, 0, 0);
+	if (IsKeyPressed(KEY_SPACE))
+	{
+		drawDawnSky = !drawDawnSky;
+	}
+
+	if (!drawDawnSky)
+	{
+		App->renderer->Draw(background_normal, 0, 0);
+	}
+	else
+	{
+		App->renderer->Draw(background_dawn, 0, 0);
+	}
 
 
 	return UPDATE_CONTINUE;
