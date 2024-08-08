@@ -12,11 +12,11 @@ class PhysBody;
 class PhysicEntity;
 
 
-class ModuleSceneIntro : public Module
+class ModuleGame : public Module
 {
 public:
-	ModuleSceneIntro(Application* app, bool start_enabled = true);
-	~ModuleSceneIntro();
+	ModuleGame(Application* app, bool start_enabled = true);
+	~ModuleGame();
 
 	bool Start();
 	update_status Update();

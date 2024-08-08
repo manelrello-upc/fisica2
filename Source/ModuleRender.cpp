@@ -74,8 +74,8 @@ bool ModuleRender::Draw(Texture2D texture, int x, int y, const Rectangle* sectio
 
     if (section != NULL) rect = *section;
 
-    position.x = (float)x * scale + camera.x;
-    position.y = (float)y * scale + camera.y;
+    position.x = (float)(x-pivot_x) * scale + camera.x;
+    position.y = (float)(y-pivot_y) * scale + camera.y;
 
 	rect.width *= scale;
 	rect.height *= scale;

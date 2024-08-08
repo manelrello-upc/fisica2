@@ -19,13 +19,13 @@
     <ClCompile Include="Source/ModuleRender.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source/ModuleSceneIntro.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Source/ModuleWindow.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\Timer.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModuleGame.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -51,13 +51,13 @@
     <ClInclude Include="Source/ModuleRender.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Source/ModuleSceneIntro.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Source/ModuleWindow.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Timer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModuleGame.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

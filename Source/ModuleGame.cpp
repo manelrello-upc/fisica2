@@ -1,7 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRender.h"
-#include "ModuleSceneIntro.h"
+#include "ModuleGame.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 
@@ -146,17 +146,17 @@ private:
 
 
 
-ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	ray_on = false;
 	sensed = false;
 }
 
-ModuleSceneIntro::~ModuleSceneIntro()
+ModuleGame::~ModuleGame()
 {}
 
 // Load assets
-bool ModuleSceneIntro::Start()
+bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
@@ -175,7 +175,7 @@ bool ModuleSceneIntro::Start()
 }
 
 // Load assets
-bool ModuleSceneIntro::CleanUp()
+bool ModuleGame::CleanUp()
 {
 	LOG("Unloading Intro scene");
 
@@ -183,7 +183,7 @@ bool ModuleSceneIntro::CleanUp()
 }
 
 // Update: draw background
-update_status ModuleSceneIntro::Update()
+update_status ModuleGame::Update()
 {
 	if(IsKeyPressed(KEY_SPACE))
 	{
@@ -252,7 +252,7 @@ update_status ModuleSceneIntro::Update()
 	return UPDATE_CONTINUE;
 }
 
-void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
+void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 
 	App->audio->PlayFx(bonus_fx);
