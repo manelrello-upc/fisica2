@@ -19,7 +19,7 @@
     <ClCompile Include="Source/ModuleRender.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source/ModuleSceneIntro.cpp">
+    <ClCompile Include="Source\ModuleGame.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source/ModuleWindow.cpp">
@@ -51,7 +51,7 @@
     <ClInclude Include="Source/ModuleRender.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Source/ModuleSceneIntro.h">
+    <ClInclude Include="Source\ModuleGame.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source/ModuleWindow.h">

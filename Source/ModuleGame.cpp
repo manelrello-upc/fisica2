@@ -1,21 +1,21 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRender.h"
-#include "ModuleSceneIntro.h"
+#include "ModuleGame.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 
 
-ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
+ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	
 }
 
-ModuleSceneIntro::~ModuleSceneIntro()
+ModuleGame::~ModuleGame()
 {}
 
 // Load assets
-bool ModuleSceneIntro::Start()
+bool ModuleGame::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
@@ -28,7 +28,7 @@ bool ModuleSceneIntro::Start()
 }
 
 // Load assets
-bool ModuleSceneIntro::CleanUp()
+bool ModuleGame::CleanUp()
 {
 	LOG("Unloading Intro scene");
 
@@ -36,7 +36,7 @@ bool ModuleSceneIntro::CleanUp()
 }
 
 // Update: draw background
-update_status ModuleSceneIntro::Update()
+update_status ModuleGame::Update()
 {
 	
 
