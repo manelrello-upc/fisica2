@@ -22,7 +22,7 @@ bool ModuleGame::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	
+	background = LoadTexture("Assets/sky.png");
 
 	return ret;
 }
@@ -39,6 +39,8 @@ bool ModuleGame::CleanUp()
 update_status ModuleGame::Update()
 {
 	
+	App->renderer->Draw(background, 0, 0);
+
 
 	return UPDATE_CONTINUE;
 }
