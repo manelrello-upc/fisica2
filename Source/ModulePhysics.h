@@ -14,27 +14,16 @@
 #define METERS_TO_PIXELS(m) ((int) floor(PIXELS_PER_METER * m))
 #define PIXEL_TO_METERS(p)  ((float) METER_PER_PIXEL * p)
 
-// Small class to return to other modules to track position and rotation of physics bodies
-class PhysBody
-{
-public:
-	PhysBody() : listener(NULL), body(NULL)
-	{}
+class b2World;
+class b2Body;
 
-	//void GetPosition(int& x, int& y) const;
-	void GetPhysicPosition(int& x, int &y) const;
-	float GetRotation() const;
-	bool Contains(int x, int y) const;
-	int RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& normal_y) const;
-
-public:
-	int width, height;
-	b2Body* body;
-	Module* listener;
-};
+// TODO 6: Create a small class that keeps a pointer to tghe b2Body
+// and has a method to request the position
+// then write the implementation in the .cpp
+// Then make your circle creation function to return a pointer to that class
 
 // Module --------------------------------------
-class ModulePhysics : public Module, public b2ContactListener // TODO
+class ModulePhysics : public Module
 {
 public:
 	ModulePhysics(Application* app, bool start_enabled = true);
@@ -45,18 +34,10 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	PhysBody* CreateCircle(int x, int y, int radius);
-	PhysBody* CreateRectangle(int x, int y, int width, int height);
-	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
-	PhysBody* CreateChain(int x, int y, const int* points, int size);
-
-	// b2ContactListener ---
-	void BeginContact(b2Contact* contact);
+	// TODO 4: Move body creation to 3 functions to create circles, rectangles and chains
 
 private:
 
 	bool debug;
 	b2World* world;
-	b2MouseJoint* mouse_joint;
-	b2Body* ground;
 };
