@@ -20,10 +20,6 @@ bool ModuleGame::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = LoadTexture("Assets/wheel.png"); 
-	box = LoadTexture("Assets/crate.png");
-	rick = LoadTexture("Assets/rick_head.png");
-
 	return ret;
 }
 
