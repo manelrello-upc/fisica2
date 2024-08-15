@@ -21,11 +21,12 @@ public:
 	bool Start();
 	update_status Update();
 	bool CleanUp();
-	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 
 public:
 
-	std::vector<PhysicEntity*> entities;
+	std::vector<PhysBody*> circles;
+	std::vector<PhysBody*> boxes;
+	std::vector<PhysBody*> ricks;
 	
 	PhysBody* sensor;
 	bool sensed;

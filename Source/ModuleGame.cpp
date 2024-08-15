@@ -5,93 +5,67 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 
-class PhysicEntity
+ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-protected:
+	ray_on = false;
+	sensed = false;
+}
 
-	PhysicEntity(PhysBody* _body, Module* _listener)
-		: body(_body)
-		, listener(_listener)
-	{
+ModuleGame::~ModuleGame()
+{}
 
-	}
-
-public:
-	virtual ~PhysicEntity() = default;
-	virtual void Update() = 0;
-
-	virtual int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal)
-	{
-		return 0;
-	}
-
-protected:
-	PhysBody* body;
-	Module* listener;
-};
-
-class Circle : public PhysicEntity
+// Load assets
+bool ModuleGame::Start()
 {
-public:
-	Circle(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateCircle(_x, _y, 25), _listener)
-		, texture(_texture)
-	{
+	LOG("Loading Intro assets");
+	bool ret = true;
 
-	}
+	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		Vector2 position{ (float)x, (float)y };
-		float scale = 1.0f;
-		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
-		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
-		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f};
-		float rotation = body->GetRotation() * RAD2DEG;
-		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
-	}
+	circle = LoadTexture("Assets/wheel.png"); 
+	box = LoadTexture("Assets/crate.png");
+	rick = LoadTexture("Assets/rick_head.png");
+	
+	bonus_fx = App->audio->LoadFx("Assets/bonus.wav");
 
-private:
-	Texture2D texture;
+	// TODO: Homework - create a sensor
 
-};
+	return ret;
+}
 
-class Box : public PhysicEntity
+// Load assets
+bool ModuleGame::CleanUp()
 {
-public:
-	Box(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateRectangle(_x, _y, 100, 50), _listener)
-		, texture(_texture)
-	{
+	LOG("Unloading Intro scene");
 
-	}
+	return true;
+}
 
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		DrawTexturePro(texture, Rectangle{ 0, 0, (float)texture.width, (float)texture.height },
-			Rectangle{ (float)x, (float)y, (float)texture.width, (float)texture.height },
-			Vector2{ (float)texture.width / 2.0f, (float)texture.height / 2.0f}, body->GetRotation() * RAD2DEG, WHITE);
-	}
-
-	int RayHit(vec2<int> ray, vec2<int> mouse, vec2<float>& normal) override
-	{
-		return body->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);;
-	}
-
-private:
-	Texture2D texture;
-
-};
-
-class Rick : public PhysicEntity
+// Update: draw background
+update_status ModuleGame::Update()
 {
-public:
-	// Pivot 0, 0
-	static constexpr int rick_head[64] = {
+	if(IsKeyPressed(KEY_SPACE))
+	{
+		ray_on = !ray_on;
+		ray.x = GetMouseX();
+		ray.y = GetMouseY();
+	}
+
+	if (IsKeyPressed(KEY_ONE))
+	{
+		circles.push_back(App->physics->CreateCircle(GetMousePosition().x, GetMousePosition().y, 25));
+		// TODO 8: Make sure to add yourself as collision callback to the circle you creates
+	}
+
+	if (IsKeyPressed(KEY_TWO))
+	{
+		boxes.push_back(App->physics->CreateRectangle(GetMousePosition().x, GetMousePosition().y, 100, 50));
+	}
+
+	if (IsKeyPressed(KEY_THREE))
+	{
+		// Pivot 0, 0
+		int rick_head[64] = {
 			14, 36,
 			42, 40,
 			40, 0,
@@ -124,88 +98,9 @@ public:
 			29, 90,
 			0, 75,
 			30, 62
-	};
+		};
 
-	Rick(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateChain(GetMouseX() - 50, GetMouseY() - 100, rick_head, 64), _listener)
-		, texture(_texture)
-	{
-
-	}
-
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		DrawTextureEx(texture, Vector2{ (float)x, (float)y }, body->GetRotation() * RAD2DEG, 1.0f, WHITE);
-	}
-
-private:
-	Texture2D texture;
-};
-
-
-
-ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
-{
-	ray_on = false;
-	sensed = false;
-}
-
-ModuleGame::~ModuleGame()
-{}
-
-// Load assets
-bool ModuleGame::Start()
-{
-	LOG("Loading Intro assets");
-	bool ret = true;
-
-	App->renderer->camera.x = App->renderer->camera.y = 0;
-
-	circle = LoadTexture("Assets/wheel.png"); 
-	box = LoadTexture("Assets/crate.png");
-	rick = LoadTexture("Assets/rick_head.png");
-	
-	bonus_fx = App->audio->LoadFx("Assets/bonus.wav");
-
-	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
-
-	return ret;
-}
-
-// Load assets
-bool ModuleGame::CleanUp()
-{
-	LOG("Unloading Intro scene");
-
-	return true;
-}
-
-// Update: draw background
-update_status ModuleGame::Update()
-{
-	if(IsKeyPressed(KEY_SPACE))
-	{
-		ray_on = !ray_on;
-		ray.x = GetMouseX();
-		ray.y = GetMouseY();
-	}
-
-	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-	{
-		entities.emplace_back(new Circle(App->physics, GetMouseX(), GetMouseY(), this, circle));
-		
-	}
-
-	if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
-	{
-		entities.emplace_back(new Box(App->physics, GetMouseX(), GetMouseY(), this, box));
-	}
-
-	if(IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE))
-	{
-		entities.emplace_back(new Rick(App->physics, GetMouseX(), GetMouseY(), this, rick));
+		ricks.push_back(App->physics->CreateChain(GetMousePosition().x, GetMousePosition().y, rick_head, 64));
 	}
 
 	// Prepare for raycast ------------------------------------------------------
@@ -219,20 +114,33 @@ update_status ModuleGame::Update()
 
 	// All draw functions ------------------------------------------------------
 
-
-	for (PhysicEntity* entity : entities)
+	for (PhysBody* pb : circles)
 	{
-		entity->Update();
+		int x, y;
+		pb->GetPhysicPosition(x, y);
+		if (pb->Contains(GetMousePosition().x, GetMousePosition().y))
+			App->renderer->Draw(circle, x, y, NULL, pb->GetRotation());
+	}
+
+	for (PhysBody* pb : boxes)
+	{
+		int x, y;
+		pb->GetPhysicPosition(x, y);
+		App->renderer->Draw(box, x, y, NULL, pb->GetRotation() * RAD2DEG, pb->width, pb->height);
 		if (ray_on)
 		{
-			int hit = entity->RayHit(ray, mouse, normal);
+			int hit = pb->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
 			if (hit >= 0)
-			{
 				ray_hit = hit;
-			}
 		}
 	}
-	
+
+	for (PhysBody* pb : ricks)
+	{
+		int x, y;
+		pb->GetPhysicPosition(x, y);
+		DrawTexture(rick, x, y, WHITE);
+	}
 
 	// ray -----------------
 	if(ray_on == true)
@@ -252,22 +160,4 @@ update_status ModuleGame::Update()
 	return UPDATE_CONTINUE;
 }
 
-void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
-{
-
-	App->audio->PlayFx(bonus_fx);
-
-	/*
-	int x, y;
-	if(bodyA)
-	{
-		bodyA->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}
-
-	if(bodyB)
-	{
-		bodyB->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}*/
-}
+// TODO 8: Now just define collision callback for the circle and play bonus_fx audio
