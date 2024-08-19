@@ -3,13 +3,12 @@
 #include "Module.h"
 #include "Globals.h"
 
-#include "box2d\box2d.h"
 
-// TODO 1: Include Box 2 header and library
+// TODO 1: Include Box 2 header
 
 
 // Module --------------------------------------
-class ModulePhysics : public Module, public b2ContactListener // TODO
+class ModulePhysics : public Module
 {
 public:
 	ModulePhysics(Application* app, bool start_enabled = true);
