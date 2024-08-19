@@ -22,20 +22,12 @@ ModulePhysics::~ModulePhysics()
 bool ModulePhysics::Start()
 {
 	LOG("Creating Physics 2D environment");
-	// TODO 2: Create a private variable for the world
-	// - You need to send it a default gravity
-	// - You need init the world in the constructor
-	// - Remember to destroy the world after using it
-
-
-	// TODO 4: Create a a big static circle as "ground"
-
+	
 	return true;
 }
 
 update_status ModulePhysics::PreUpdate()
 {
-	// TODO 3: Update the simulation ("step" the world)
 
 	return UPDATE_CONTINUE;
 }
@@ -43,8 +35,7 @@ update_status ModulePhysics::PreUpdate()
 // 
 update_status ModulePhysics::PostUpdate()
 {
-	// TODO 5: On space bar press, create a circle on mouse position
-	// - You need to transform the position / radius
+	
 
 	if (IsKeyPressed(KEY_F1))
 	{

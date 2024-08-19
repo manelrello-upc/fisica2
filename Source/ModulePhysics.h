@@ -5,8 +5,6 @@
 
 #include "box2d\box2d.h"
 
-// TODO 1: Include Box 2 header and library
-
 
 // Module --------------------------------------
 class ModulePhysics : public Module, public b2ContactListener // TODO
