@@ -185,11 +185,15 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 // 
 update_status ModulePhysics::PostUpdate()
 {
-	if(IsKeyPressed(KEY_F1))
+	if (IsKeyPressed(KEY_F1))
+	{
 		debug = !debug;
+	}
 
-	if(!debug)
+	if (!debug)
+	{
 		return UPDATE_CONTINUE;
+	}
 
 	// Bonus code: this will iterate all objects in the world and draw the circles
 	// You need to provide your own macro to translate meters to pixels

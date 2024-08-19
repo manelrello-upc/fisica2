@@ -192,18 +192,18 @@ update_status ModuleGame::Update()
 		ray.y = GetMouseY();
 	}
 
-	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+	if(IsKeyPressed(KEY_ONE))
 	{
 		entities.emplace_back(new Circle(App->physics, GetMouseX(), GetMouseY(), this, circle));
 		
 	}
 
-	if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+	if(IsKeyPressed(KEY_TWO))
 	{
 		entities.emplace_back(new Box(App->physics, GetMouseX(), GetMouseY(), this, box));
 	}
 
-	if(IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE))
+	if(IsKeyPressed(KEY_THREE))
 	{
 		entities.emplace_back(new Rick(App->physics, GetMouseX(), GetMouseY(), this, rick));
 	}
