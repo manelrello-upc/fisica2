@@ -24,9 +24,7 @@ public:
 
 public:
 
-	std::vector<PhysBody*> circles;
-	std::vector<PhysBody*> boxes;
-	std::vector<PhysBody*> ricks;
+	std::vector<PhysicEntity*> entities;
 	
 	PhysBody* sensor;
 	bool sensed;
