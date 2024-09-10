@@ -34,8 +34,8 @@ public:
 
 	// TODO 4: Apply a friction to these circles (as if the game had a top view) while they cross the screen. 
 
-	// TODO 5: With each left click, increase the STATIC friction coeficient.
+	// TODO 5: With each left click, increase the STATIC friction coeficient. (At some point, reset it back to zero). Display it at the bottom of the screen.
 
-	// TODO 6: With each right click, increase the DYNAMIC friction coeficient.
+	// TODO 6: With each right click, increase the DYNAMIC friction coeficient. (At some point, reset it back to zero). Display it at the bottom of the screen.
 
 };
