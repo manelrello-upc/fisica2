@@ -17,7 +17,7 @@
 class b2World;
 class b2Body;
 
-// TODO 5: Create a small class that keeps a pointer to tghe b2Body
+// TODO 5: Create a small class that keeps a pointer to the b2Body
 // and has a method to request the position
 // then write the implementation in the .cpp
 // Then make your circle creation function to return a pointer to that class
