@@ -79,13 +79,13 @@ update_status ModulePhysics::PostUpdate()
 	if (IsKeyPressed(KEY_TWO))
 	{
 		// TODO 1: When pressing 2, create a box on the mouse position
+		// To have the box behave normally, set fixture's density to 1.0f
 
-		// TODO 2: To have the box behave normally, set fixture's density to 1.0f
 	}
 
 	if (IsKeyPressed(KEY_THREE))
 	{
-		// TODO 3: Create a chain shape using those vertices
+		// TODO 2: Create a chain shape using those vertices
 		// remember to convert them from pixels to meters!
 		/*
 		int points[24] = {

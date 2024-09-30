@@ -34,9 +34,9 @@ bool ModuleGame::CleanUp()
 // Update: draw background
 update_status ModuleGame::Update()
 {
-	// TODO 5: Move all creation of bodies on 1,2,3 key press here in the scene
+	// TODO 4: Move all creation of bodies on 1,2,3 key press here in the scene
 
-	// TODO 7: Draw all the circles using "circle" texture
+	// TODO 6: Draw all the circles using "circle" texture
 
 	return UPDATE_CONTINUE;
 }
