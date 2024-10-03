@@ -19,6 +19,11 @@ public:
 	PhysBody() : listener(NULL), body(NULL)
 	{}
 
+	~PhysBody()
+	{
+		
+	}
+
 	//void GetPosition(int& x, int& y) const;
 	void GetPhysicPosition(int& x, int &y) const;
 	float GetRotation() const;
@@ -43,12 +48,13 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
+	std::unique_ptr<PhysBody> CreateCircle(int x, int y, int radius);
 	
 	void BeginContact(b2Contact* contact);
 
 private:
 
-	bool debug;
+	bool debug = false;
 	b2World* world;
 
 };

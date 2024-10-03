@@ -3,6 +3,7 @@
 #include "raylib.h"
 
 #include <stdio.h>
+#include <memory>
 
 #define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
 

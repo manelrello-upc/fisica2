@@ -7,10 +7,28 @@
 
 #include "raylib.h"
 #include <vector>
+#include "Timer.h"
 
 class PhysBody;
 class PhysicEntity;
 
+class Circle
+{
+public:
+	Circle(std::unique_ptr<PhysBody> i_body, float i_mass);
+	Circle(Circle&& i_other);
+	~Circle();
+
+	float GetLifeTime() const;
+	void Draw();
+	void Update(float i_staticFricion, float i_dynamicFriction);
+
+private:
+	std::unique_ptr<PhysBody> m_body;
+	Timer m_lifeTime;
+	float mass;
+
+};
 
 class ModuleGame : public Module
 {
@@ -22,10 +40,19 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+
+
 public:
 
+	Timer m_creationTimer;
+	std::vector<Circle> m_circles;
 	
-	// TODO 1: Every second, create a circle at the leftmost side of the screen at a random height. These circles should be destroyed after 10 seconds.
+	std::vector<float> m_staticFrictions = { 0.0f, 0.1f, 0.3f, 0.5f };
+	std::vector<float> m_dynamicFrictions = {0.0f, 0.1f, 0.3f, 0.5f};
+	int m_currentStaticFriction = 0;
+	int m_currentDynamicFriction = 0;
+
+	// TODO 1: Every second, create a circle at the leftmost side of the screen at a random height.
 	// TIP: You can check (and maybe reuse) some previous Handout...
 	
 	// TODO 2: Apply an horizontal Force to each circle so it crosses the screen with constant acceleration. (NO GRAVITY to the bottom of the screen)

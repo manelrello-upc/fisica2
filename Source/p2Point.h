@@ -129,7 +129,7 @@ public:
 
 	vec2<TYPE>& operator*(float a)
 	{
-		p2Vector<TYPE> r;
+		vec2<TYPE> r;
 
 		r.x = x * a;
 		r.y = y * a;
