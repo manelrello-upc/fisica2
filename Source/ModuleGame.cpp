@@ -9,10 +9,10 @@ class PhysicEntity
 {
 protected:
 
-	PhysicEntity(PhysBody* _body)
-		: body(_body)
+	PhysicEntity(PhysBody* _body, Module* listener)
+		: body(_body), listener(listener)
 	{
-
+		body->listener = listener;
 	}
 
 public:
@@ -26,16 +26,17 @@ public:
 
 protected:
 	PhysBody* body;
+	Module* listener = nullptr;
 };
 
 class Circle : public PhysicEntity
 {
 public:
-	Circle(ModulePhysics* physics, int _x, int _y, Texture2D _texture)
-		: PhysicEntity(physics->CreateCircle(_x, _y, 25))
+	Circle(ModulePhysics* physics, int _x, int _y, Module* listener, Texture2D _texture)
+		: PhysicEntity(physics->CreateCircle(_x, _y, 25), listener)
 		, texture(_texture)
 	{
-
+		
 	}
 
 	void Update() override
@@ -59,8 +60,8 @@ private:
 class Box : public PhysicEntity
 {
 public:
-	Box(ModulePhysics* physics, int _x, int _y, Texture2D _texture)
-		: PhysicEntity(physics->CreateRectangle(_x, _y, 100, 50))
+	Box(ModulePhysics* physics, int _x, int _y, Module* listener, Texture2D _texture)
+		: PhysicEntity(physics->CreateRectangle(_x, _y, 100, 50), listener)
 		, texture(_texture)
 	{
 
@@ -124,8 +125,8 @@ public:
 			30, 62
 	};
 
-	Rick(ModulePhysics* physics, int _x, int _y, Texture2D _texture)
-		: PhysicEntity(physics->CreateChain(GetMouseX() - 50, GetMouseY() - 100, rick_head, 64))
+	Rick(ModulePhysics* physics, int _x, int _y, Module* listener, Texture2D _texture)
+		: PhysicEntity(physics->CreateChain(GetMouseX() - 50, GetMouseY() - 100, rick_head, 64), listener)
 		, texture(_texture)
 	{
 
@@ -191,12 +192,12 @@ update_status ModuleGame::Update()
 	if (IsKeyPressed(KEY_ONE))
 	{
 		// TODO 8: Make sure to add yourself as collision callback to the circle you creates
-		entities.emplace_back(new Circle(App->physics, GetMouseX(), GetMouseY(), circle));
+		entities.emplace_back(new Circle(App->physics, GetMouseX(), GetMouseY(), this, circle));
 	}
 
 	if (IsKeyPressed(KEY_TWO))
 	{
-		entities.emplace_back(new Box(App->physics, GetMouseX(), GetMouseY(), box));
+		entities.emplace_back(new Box(App->physics, GetMouseX(), GetMouseY(), this, box));
 	}
 
 	if (IsKeyPressed(KEY_THREE))
@@ -237,7 +238,7 @@ update_status ModuleGame::Update()
 			30, 62
 		};
 
-		entities.emplace_back(new Rick(App->physics, GetMouseX(), GetMouseY(), rick));
+		entities.emplace_back(new Rick(App->physics, GetMouseX(), GetMouseY(), this, rick));
 	}
 
 	// Prepare for raycast ------------------------------------------------------
@@ -283,3 +284,7 @@ update_status ModuleGame::Update()
 }
 
 // TODO 8: Now just define collision callback for the circle and play bonus_fx audio
+void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
+{
+	App->audio->PlayFx(bonus_fx);
+}

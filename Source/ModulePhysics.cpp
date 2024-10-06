@@ -24,6 +24,7 @@ bool ModulePhysics::Start()
 
 	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
 	// TODO 3: You need to make ModulePhysics class a contact listener
+	world->SetContactListener(this);
 
 	// big static circle as "ground" in the middle of the screen
 	int x = (int)(SCREEN_WIDTH / 2);
@@ -62,9 +63,12 @@ update_status ModulePhysics::PreUpdate()
 
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 {
+	PhysBody* pbody = new PhysBody();
+
 	b2BodyDef body;
 	body.type = b2_dynamicBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 
@@ -77,9 +81,9 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 	b->CreateFixture(&fixture);
 
 	// TODO 4: add a pointer to PhysBody as UserData to the body
-	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
 	pbody->width = pbody->height = radius;
+
 
 	return pbody;
 }
@@ -104,6 +108,8 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 	pbody->body = b;
 	pbody->width = (int)(width * 0.5f);
 	pbody->height = (int)(height * 0.5f);
+
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	return pbody;
 }
@@ -132,11 +138,13 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 
 	b->CreateFixture(&fixture);
 
-	delete p;
+	delete[] p;
 
 	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
 	pbody->width = pbody->height = 0;
+
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	return pbody;
 }
@@ -264,6 +272,15 @@ bool PhysBody::Contains(int x, int y) const
 	// TODO 1: Write the code to return true in case the point
 	// is inside ANY of the shapes contained by this body
 
+	b2Fixture* fixture = body->GetFixtureList();
+	while (fixture != nullptr) {
+		if (fixture->GetShape()->TestPoint(body->GetTransform(), p))
+			return true;
+
+		fixture = fixture->GetNext();
+	}
+
+
 	return false;
 }
 
@@ -274,9 +291,42 @@ int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& no
 
 	int ret = -1;
 
+	b2RayCastOutput output;
+	b2RayCastInput input;
+
+	input.p1.Set(PIXEL_TO_METERS(x1), PIXEL_TO_METERS(y1));
+	input.p2.Set(PIXEL_TO_METERS(x2), PIXEL_TO_METERS(y2));
+	input.maxFraction = 1.0f;
+
+	for(b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext()) {
+		if (fixture->GetShape()->RayCast(&output, input, body->GetTransform(), 0)) {
+
+			float fx = (float)(x2 - x1);
+			float fy = (float)(y2 - y1);
+			float dist = sqrtf((fx * fx) + (fy * fy));
+
+			normal_x = output.normal.x;
+			normal_y = output.normal.y;
+
+			return (int)(output.fraction * dist);
+		}
+	}
+
 	return ret;
 }
 
 // TODO 3
-
 // TODO 7: Call the listeners that are not NULL
+void ModulePhysics::BeginContact(b2Contact* contact)
+{
+	PhysBody* a = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
+	PhysBody* b = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
+
+	if (a && a->listener) {
+		a->listener->OnCollision(a, b);
+	}
+
+	if (b && b->listener) {
+		b->listener->OnCollision(b, a);
+	}
+}
