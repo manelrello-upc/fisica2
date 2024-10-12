@@ -74,9 +74,12 @@ update_status ModulePhysics::PreUpdate()
 
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 {
+	PhysBody* pbody = new PhysBody();
+
 	b2BodyDef body;
 	body.type = b2_dynamicBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 
@@ -88,9 +91,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 
 	b->CreateFixture(&fixture);
 
-	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 	pbody->width = pbody->height = radius;
 
 	return pbody;
@@ -98,9 +99,12 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 
 PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 {
+	PhysBody* pbody = new PhysBody();
+
 	b2BodyDef body;
 	body.type = b2_dynamicBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 	b2PolygonShape box;
@@ -112,9 +116,7 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 
 	b->CreateFixture(&fixture);
 
-	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 	pbody->width = (int)(width * 0.5f);
 	pbody->height = (int)(height * 0.5f);
 
@@ -123,9 +125,12 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 
 PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height)
 {
+	PhysBody* pbody = new PhysBody();
+
 	b2BodyDef body;
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 
@@ -139,9 +144,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 
 	b->CreateFixture(&fixture);
 
-	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 	pbody->width = width;
 	pbody->height = height;
 
@@ -150,9 +153,12 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 
 PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 {
+	PhysBody* pbody = new PhysBody();
+
 	b2BodyDef body;
 	body.type = b2_dynamicBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 
 	b2Body* b = world->CreateBody(&body);
 
@@ -174,9 +180,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 
 	delete p;
 
-	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
 	pbody->width = pbody->height = 0;
 
 	return pbody;
@@ -267,7 +271,6 @@ update_status ModulePhysics::PostUpdate()
 			}
 
 			// TODO 1: If mouse button 1 is pressed ...
-			// App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN
 			// test if the current body contains mouse position
 		}
 	}
@@ -297,13 +300,6 @@ bool ModulePhysics::CleanUp()
 
 	return true;
 }
-
-//void PhysBody::GetPosition(int& x, int &y) const
-//{
-//	b2Vec2 pos = body->GetPosition();
-//	x = METERS_TO_PIXELS(pos.x) - (width);
-//	y = METERS_TO_PIXELS(pos.y) - (height);
-//}
 
 void PhysBody::GetPhysicPosition(int& x, int& y) const
 {

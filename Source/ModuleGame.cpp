@@ -13,7 +13,7 @@ protected:
 		: body(_body)
 		, listener(_listener)
 	{
-
+		body->listener = listener;
 	}
 
 public:
@@ -254,20 +254,5 @@ update_status ModuleGame::Update()
 
 void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-
 	App->audio->PlayFx(bonus_fx);
-
-	/*
-	int x, y;
-	if(bodyA)
-	{
-		bodyA->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}
-
-	if(bodyB)
-	{
-		bodyB->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}*/
 }
