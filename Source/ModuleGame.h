@@ -7,6 +7,7 @@
 
 #include "raylib.h"
 #include <vector>
+#include <set>
 
 class PhysBody;
 class PhysicEntity;
@@ -38,4 +39,6 @@ public:
 
 	vec2<int> ray;
 	bool ray_on;
+
+	std::set<std::set<PhysicEntity*>> collidingEntities;
 };

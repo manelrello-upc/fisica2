@@ -25,7 +25,7 @@ public:
 		return 0;
 	}
 
-protected:
+public:
 	PhysBody* body;
 	Module* listener;
 };
@@ -35,6 +35,13 @@ class Circle : public PhysicEntity
 public:
 	Circle(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
 		: PhysicEntity(physics->CreateCircle(_x, _y, 25), _listener)
+		, texture(_texture)
+	{
+
+	}
+
+	Circle(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture, float mass, b2Vec2 initialVelocity, float radius)
+		: PhysicEntity(physics->CreateCircle(_x, _y, radius, initialVelocity, mass), _listener)
 		, texture(_texture)
 	{
 
@@ -249,10 +256,95 @@ update_status ModuleGame::Update()
 		}
 	}
 
+	for (const auto& collision : collidingEntities)
+	{
+		float totalMass = 0.0f;
+		float sumRadius = 0.0f;
+
+		b2Vec2 momentum;
+		b2Vec2 position;
+		momentum.x = 0.0f;
+		momentum.y = 0.0f;
+		for (PhysicEntity* entity : collision)
+		{
+			const b2Fixture* fixture = entity->body->body->GetFixtureList();
+			const b2CircleShape* circle = dynamic_cast<const b2CircleShape*>(fixture->GetShape());
+			sumRadius += circle->m_radius;
+			entities.erase(std::find(entities.begin(), entities.end(), entity));
+			b2Vec2 vec = entity->body->body->GetLinearVelocity();
+			momentum.x += vec.x * entity->body->body->GetMass();
+			momentum.y += vec.y * entity->body->body->GetMass();
+			totalMass += entity->body->body->GetMass();
+			float x = 0;
+			float y = 0;
+			position += entity->body->body->GetPosition();
+			App->physics->DeleteBody(entity->body);
+		}
+
+		b2Vec2 velocity;
+		velocity.x = momentum.x / totalMass;
+		velocity.y = momentum.y / totalMass;
+		position.x /= 2;
+		position.y /= 2;
+		//Create a new one
+		entities.emplace_back(new Circle(App->physics, GetMouseX(), GetMouseY(), this, circle, totalMass, velocity, METERS_TO_PIXELS(sumRadius)));
+	}
+	
+	collidingEntities.clear();
+
 	return UPDATE_CONTINUE;
 }
 
 void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	App->audio->PlayFx(bonus_fx);
+	if (!bodyA || !bodyB)
+	{
+		return;
+	}
+
+	bool isCircle1 = false;
+	bool isCircle2 = false;
+	
+	
+	const b2Fixture* fixture = bodyA->body->GetFixtureList();
+	while (fixture != NULL)
+	{
+		if (const b2CircleShape* circle = dynamic_cast<const b2CircleShape*>(fixture->GetShape()))
+		{
+			//sumradius += circle->m_radius;
+			isCircle1 = true;
+			break;
+		}			
+		fixture = fixture->GetNext();
+	}
+
+	const b2Fixture* fixture2 = bodyB->body->GetFixtureList();
+	while (fixture2 != NULL)
+	{
+		if (const b2CircleShape* circle = dynamic_cast<const b2CircleShape*>(fixture2->GetShape()))
+		{
+			//sumradius += circle->m_radius;
+			isCircle2 = true;
+			break;
+		}
+		fixture2 = fixture2->GetNext();
+	}
+
+	if (isCircle1 && isCircle2)
+	{
+		std::set<PhysicEntity*> colliding;
+		//Delete both bodies
+		for (PhysicEntity* entity : entities)
+		{
+			if (entity->body == bodyA || entity->body == bodyB)
+			{
+				colliding.emplace(entity);
+			}
+		}
+		collidingEntities.emplace(colliding);
+
+		
+	}
+
+	
 }
