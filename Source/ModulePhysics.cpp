@@ -97,32 +97,6 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2Vec2 initialVelocity, float mass)
-{
-	PhysBody* pbody = new PhysBody();
-
-	b2BodyDef body;
-	body.type = b2_dynamicBody;
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-	body.userData.pointer = reinterpret_cast<uintptr_t>(pbody);
-
-	b2Body* b = world->CreateBody(&body);
-
-	b2CircleShape shape;
-	shape.m_radius = PIXEL_TO_METERS(radius);
-	b2FixtureDef fixture;
-	fixture.shape = &shape;
-	fixture.density = mass / (b2_pi * radius * radius);
-
-	b->CreateFixture(&fixture);
-
-	pbody->body = b;
-	pbody->width = pbody->height = radius;
-	b->SetLinearVelocity(initialVelocity);
-
-	return pbody;
-}
-
 PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 {
 	PhysBody* pbody = new PhysBody();
@@ -212,10 +186,6 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, const int* points, int size)
 	return pbody;
 }
 
-void ModulePhysics::DeleteBody(PhysBody* body)
-{
-	world->DestroyBody(body->body);
-}
 
 // 
 update_status ModulePhysics::PostUpdate()
