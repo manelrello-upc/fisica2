@@ -73,7 +73,7 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, uint16 categoryBits, uint16 maskBits)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 {
 	PhysBody* pbody = new PhysBody();
 
@@ -90,8 +90,6 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, uint16 categoryB
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
 	fixture.density = 1.0f;
-	fixture.filter.categoryBits = categoryBits;
-	fixture.filter.maskBits = maskBits;
 
 	b->CreateFixture(&fixture);
 
@@ -101,7 +99,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, uint16 categoryB
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
+PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 {
 	PhysBody* pbody = new PhysBody();
 
@@ -117,9 +115,9 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, ui
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	fixture.density = 1.0f;
-	fixture.filter.categoryBits = categoryBits;
-	fixture.filter.maskBits = maskBits;
-	fixture.filter.groupIndex = groupIndex;
+	// TODO: Add filter categoryBits and maskBits to fixture
+
+	// TODO: Add groupIndex filter to fixture. Set default value to 0
 
 	b->CreateFixture(&fixture);
 

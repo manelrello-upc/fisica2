@@ -5,18 +5,10 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 
-enum PhysicCategory
-{
-	DEFAULT =	1 << 0,
-	PLANE =		1 << 1,
-	CAR =		1 << 2,
-	SHIP =		1 << 3,
-	BIKE =		1 << 4
-};
 
-enum PhysicGroup {
-	LAND = 1,
-};
+// TODO: Create an enum to represent physics categories for collision detection
+
+// TODO: Create an enum to define different physics groups
 
 class PhysicEntity
 {
@@ -46,8 +38,8 @@ public:
 class Box : public PhysicEntity
 {
 public:
-	Box(ModulePhysics* physics, int _x, int _y, int width, int height, Module* _listener, Texture2D _texture, uint16 category, uint16 maskBits, int16 groupIndex = 0)
-		: PhysicEntity(physics->CreateRectangle(_x, _y, width, height, category, maskBits, groupIndex), _listener)
+	Box(ModulePhysics* physics, int _x, int _y, int width, int height, Module* _listener, Texture2D _texture)
+		: PhysicEntity(physics->CreateRectangle(_x, _y, width, height), _listener)
 		, texture(_texture)
 	{
 
@@ -71,29 +63,37 @@ private:
 	Texture2D texture;
 };
 
+
+// TODO: Set Category and Mask to each entity
+// * Planes should not collide with other vehicles.
+// * Bikes and cars should collide with bikes and cars.
+// * Ships should collide with ships
+
+// TODO: Remove Mask for bikes and cars and set the groupIndex to LAND
+
 class Plane : public Box {
 public:
-	Plane(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture): Box(physics, _x, _y, 232, 121, _listener, _texture, PhysicCategory::PLANE, PhysicCategory::DEFAULT) {
+	Plane(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture): Box(physics, _x, _y, 232, 121, _listener, _texture) {
 		body->body->ApplyForce(b2Vec2(0.0f, -1000.f), body->body->GetWorldCenter(), true);
 	}
 };
 
 class Bike : public Box {
 public:
-	Bike(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 18, 35, _listener, _texture, PhysicCategory::BIKE, PhysicCategory::DEFAULT, PhysicGroup::LAND) {
+	Bike(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 18, 35, _listener, _texture) {
 	}
 };
 
 class Car : public Box {
 public:
-	Car(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 26, 43, _listener, _texture, PhysicCategory::CAR, PhysicCategory::DEFAULT | PhysicCategory::CAR, PhysicGroup::LAND) {
+	Car(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 26, 43, _listener, _texture) {
 		body->body->ApplyForce(b2Vec2(0.0f, 100.f), body->body->GetWorldCenter(), true);
 	}
 };
 
 class Ship : public Box {
 public:
-	Ship(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 215, 138, _listener, _texture, PhysicCategory::SHIP, PhysicCategory::DEFAULT | PhysicCategory::SHIP)
+	Ship(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 215, 138, _listener, _texture)
 	{
 	}
 };
