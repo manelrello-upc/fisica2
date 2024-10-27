@@ -6,9 +6,9 @@
 #include "ModulePhysics.h"
 
 
-// TODO: Create an enum to represent physics categories for collision detection
+// TODO 1: Create an enum to represent physics categories for collision detection
 
-// TODO: Create an enum to define different physics groups
+// TODO 4: Create an enum to define different physics groups
 
 class PhysicEntity
 {
@@ -64,12 +64,12 @@ private:
 };
 
 
-// TODO: Set Category and Mask to each entity
+// TODO 3: Set Category and Mask to each entity
 // * Planes should not collide with other vehicles.
 // * Bikes and cars should collide with bikes and cars.
 // * Ships should collide with ships
 
-// TODO: Remove Mask for bikes and cars and set the groupIndex to LAND
+// TODO 6: Remove Mask for bikes and cars and set the groupIndex to LAND
 
 class Plane : public Box {
 public:

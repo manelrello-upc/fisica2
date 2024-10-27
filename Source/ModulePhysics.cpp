@@ -115,9 +115,9 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	fixture.density = 1.0f;
-	// TODO: Add filter categoryBits and maskBits to fixture
+	// TODO 2: Add filter categoryBits and maskBits to fixture
 
-	// TODO: Add groupIndex filter to fixture. Set default value to 0
+	// TODO 5: Add groupIndex filter to fixture. Set default value to 0
 
 	b->CreateFixture(&fixture);
 
