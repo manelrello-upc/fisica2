@@ -5,6 +5,19 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 
+enum PhysicCategory
+{
+	DEFAULT =	1 << 0,
+	PLANE =		1 << 1,
+	CAR =		1 << 2,
+	SHIP =		1 << 3,
+	BIKE =		1 << 4
+};
+
+enum PhysicGroup {
+	LAND = 1,
+};
+
 class PhysicEntity
 {
 protected:
@@ -25,44 +38,16 @@ public:
 		return 0;
 	}
 
-protected:
+public:
 	PhysBody* body;
 	Module* listener;
-};
-
-class Circle : public PhysicEntity
-{
-public:
-	Circle(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateCircle(_x, _y, 25), _listener)
-		, texture(_texture)
-	{
-
-	}
-
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		Vector2 position{ (float)x, (float)y };
-		float scale = 1.0f;
-		Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
-		Rectangle dest = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
-		Vector2 origin = { (float)texture.width / 2.0f, (float)texture.height / 2.0f};
-		float rotation = body->GetRotation() * RAD2DEG;
-		DrawTexturePro(texture, source, dest, origin, rotation, WHITE);
-	}
-
-private:
-	Texture2D texture;
-
 };
 
 class Box : public PhysicEntity
 {
 public:
-	Box(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateRectangle(_x, _y, 100, 50), _listener)
+	Box(ModulePhysics* physics, int _x, int _y, int width, int height, Module* _listener, Texture2D _texture, uint16 category, uint16 maskBits, int16 groupIndex = 0)
+		: PhysicEntity(physics->CreateRectangle(_x, _y, width, height, category, maskBits, groupIndex), _listener)
 		, texture(_texture)
 	{
 
@@ -84,64 +69,33 @@ public:
 
 private:
 	Texture2D texture;
-
 };
 
-class Rick : public PhysicEntity
-{
+class Plane : public Box {
 public:
-	// Pivot 0, 0
-	static constexpr int rick_head[64] = {
-			14, 36,
-			42, 40,
-			40, 0,
-			75, 30,
-			88, 4,
-			94, 39,
-			111, 36,
-			104, 58,
-			107, 62,
-			117, 67,
-			109, 73,
-			110, 85,
-			106, 91,
-			109, 99,
-			103, 104,
-			100, 115,
-			106, 121,
-			103, 125,
-			98, 126,
-			95, 137,
-			83, 147,
-			67, 147,
-			53, 140,
-			46, 132,
-			34, 136,
-			38, 126,
-			23, 123,
-			30, 114,
-			10, 102,
-			29, 90,
-			0, 75,
-			30, 62
-	};
-
-	Rick(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture)
-		: PhysicEntity(physics->CreateChain(GetMouseX() - 50, GetMouseY() - 100, rick_head, 64), _listener)
-		, texture(_texture)
-	{
-
+	Plane(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture): Box(physics, _x, _y, 232, 121, _listener, _texture, PhysicCategory::PLANE, PhysicCategory::DEFAULT) {
+		body->body->ApplyForce(b2Vec2(0.0f, -1000.f), body->body->GetWorldCenter(), true);
 	}
+};
 
-	void Update() override
-	{
-		int x, y;
-		body->GetPhysicPosition(x, y);
-		DrawTextureEx(texture, Vector2{ (float)x, (float)y }, body->GetRotation() * RAD2DEG, 1.0f, WHITE);
+class Bike : public Box {
+public:
+	Bike(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 18, 35, _listener, _texture, PhysicCategory::BIKE, PhysicCategory::DEFAULT, PhysicGroup::LAND) {
 	}
+};
 
-private:
-	Texture2D texture;
+class Car : public Box {
+public:
+	Car(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 26, 43, _listener, _texture, PhysicCategory::CAR, PhysicCategory::DEFAULT | PhysicCategory::CAR, PhysicGroup::LAND) {
+		body->body->ApplyForce(b2Vec2(0.0f, 100.f), body->body->GetWorldCenter(), true);
+	}
+};
+
+class Ship : public Box {
+public:
+	Ship(ModulePhysics* physics, int _x, int _y, Module* _listener, Texture2D _texture) : Box(physics, _x, _y, 215, 138, _listener, _texture, PhysicCategory::SHIP, PhysicCategory::DEFAULT | PhysicCategory::SHIP)
+	{
+	}
 };
 
 
@@ -149,7 +103,6 @@ private:
 ModuleGame::ModuleGame(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	ray_on = false;
-	sensed = false;
 }
 
 ModuleGame::~ModuleGame()
@@ -163,13 +116,27 @@ bool ModuleGame::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = LoadTexture("Assets/wheel.png"); 
-	box = LoadTexture("Assets/crate.png");
-	rick = LoadTexture("Assets/rick_head.png");
+	plane = LoadTexture("Assets/Plane.png"); 
+	car = LoadTexture("Assets/Car.png");
+	ship = LoadTexture("Assets/Ship.png");
+	bike = LoadTexture("Assets/Bike.png");
 	
-	bonus_fx = App->audio->LoadFx("Assets/bonus.wav");
 
-	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+	for (int i = 0; i < 6; ++i) {
+		entities.push_back(new Car(App->physics, i * 100 + SCREEN_WIDTH * 0.25f, 100, this, car));
+	}
+
+	for (int i = 0; i < 2; ++i) {
+		entities.push_back(new Ship(App->physics, i * 300 + SCREEN_WIDTH * 0.35f, SCREEN_HEIGHT * 0.5f, this, ship));
+	}
+
+	for (int i = 0; i < 6; ++i) {
+		entities.push_back(new Bike(App->physics, i * 100 + SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.5f, this, bike));
+	}
+
+	for (int i = 0; i < 3; ++i) {
+		entities.push_back(new Plane(App->physics, i * 300 + SCREEN_WIDTH * 0.25f, 600, this, plane));
+	}
 
 	return ret;
 }
@@ -190,22 +157,6 @@ update_status ModuleGame::Update()
 		ray_on = !ray_on;
 		ray.x = GetMouseX();
 		ray.y = GetMouseY();
-	}
-
-	if(IsKeyPressed(KEY_ONE))
-	{
-		entities.emplace_back(new Circle(App->physics, GetMouseX(), GetMouseY(), this, circle));
-		
-	}
-
-	if(IsKeyPressed(KEY_TWO))
-	{
-		entities.emplace_back(new Box(App->physics, GetMouseX(), GetMouseY(), this, box));
-	}
-
-	if(IsKeyPressed(KEY_THREE))
-	{
-		entities.emplace_back(new Rick(App->physics, GetMouseX(), GetMouseY(), this, rick));
 	}
 
 	// Prepare for raycast ------------------------------------------------------
@@ -254,5 +205,5 @@ update_status ModuleGame::Update()
 
 void ModuleGame::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	App->audio->PlayFx(bonus_fx);
+	
 }

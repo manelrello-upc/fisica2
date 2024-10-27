@@ -27,14 +27,10 @@ public:
 
 	std::vector<PhysicEntity*> entities;
 	
-	PhysBody* sensor;
-	bool sensed;
-
-	Texture2D circle;
-	Texture2D box;
-	Texture2D rick;
-
-	uint32 bonus_fx;
+	Texture2D plane;
+	Texture2D car;
+	Texture2D ship;
+	Texture2D bike;
 
 	vec2<int> ray;
 	bool ray_on;

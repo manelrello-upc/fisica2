@@ -30,23 +30,24 @@ bool ModulePhysics::Start()
 	b2BodyDef bd;
 	ground = world->CreateBody(&bd);
 
-	// big static circle as "ground" in the middle of the screen
-	int x = (int)(SCREEN_WIDTH / 2);
-	int y = (int)(SCREEN_HEIGHT / 1.5f);
-	int diameter = SCREEN_WIDTH / 2;
+	{
+		b2EdgeShape shape;
 
-	b2BodyDef body;
-	body.type = b2_staticBody;
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+		b2FixtureDef sd;
+		sd.shape = &shape;
+		sd.friction = 0.3f;
 
-	b2Body* big_ball = world->CreateBody(&body);
-
-	b2CircleShape shape;
-	shape.m_radius = PIXEL_TO_METERS(diameter) * 0.5f;
-
-	b2FixtureDef fixture;
-	fixture.shape = &shape;
-	big_ball->CreateFixture(&fixture);
+		b2BodyDef bd;
+		b2Body* floor = world->CreateBody(&bd);
+		shape.SetTwoSided(b2Vec2(PIXEL_TO_METERS(0.0f), PIXEL_TO_METERS((SCREEN_HEIGHT))), b2Vec2(PIXEL_TO_METERS(SCREEN_WIDTH), PIXEL_TO_METERS(SCREEN_HEIGHT)));
+		floor->CreateFixture(&sd);
+		shape.SetTwoSided(b2Vec2(PIXEL_TO_METERS(SCREEN_WIDTH), PIXEL_TO_METERS((SCREEN_HEIGHT))), b2Vec2(PIXEL_TO_METERS(SCREEN_WIDTH), PIXEL_TO_METERS(0.0f)));
+		floor->CreateFixture(&sd);
+		shape.SetTwoSided(b2Vec2(PIXEL_TO_METERS(0.0f), PIXEL_TO_METERS((0.0f))), b2Vec2(PIXEL_TO_METERS(SCREEN_WIDTH), PIXEL_TO_METERS(0.0f)));
+		floor->CreateFixture(&sd);
+		shape.SetTwoSided(b2Vec2(PIXEL_TO_METERS(0.0f), PIXEL_TO_METERS((0.0f))), b2Vec2(PIXEL_TO_METERS(0.0f), PIXEL_TO_METERS(SCREEN_HEIGHT)));
+		floor->CreateFixture(&sd);
+	}
 
 	return true;
 }
@@ -72,7 +73,7 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, uint16 categoryBits, uint16 maskBits)
 {
 	PhysBody* pbody = new PhysBody();
 
@@ -85,9 +86,12 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 
 	b2CircleShape shape;
 	shape.m_radius = PIXEL_TO_METERS(radius);
+
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
 	fixture.density = 1.0f;
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
 
 	b->CreateFixture(&fixture);
 
@@ -97,7 +101,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
+PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, uint16 categoryBits, uint16 maskBits, int16 groupIndex)
 {
 	PhysBody* pbody = new PhysBody();
 
@@ -113,6 +117,9 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	fixture.density = 1.0f;
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
+	fixture.filter.groupIndex = groupIndex;
 
 	b->CreateFixture(&fixture);
 
@@ -274,8 +281,6 @@ update_status ModulePhysics::PostUpdate()
 				break;
 			}
 
-			// TODO 1: If mouse button 1 is pressed ...
-			// test if the current body contains mouse position
 			if (mouse_joint == nullptr && mouseSelect == nullptr && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 				
 				if (f->TestPoint(pMousePosition)) {
@@ -285,10 +290,6 @@ update_status ModulePhysics::PostUpdate()
 		}
 	}
 
-	// If a body was selected we will attach a mouse joint to it
-	// so we can pull it around
-	// TODO 2: If a body was selected, create a mouse joint
-	// using mouse_joint class property
 	if (mouseSelect) {
 		b2MouseJointDef def;
 
@@ -301,9 +302,6 @@ update_status ModulePhysics::PostUpdate()
 
 		mouse_joint = (b2MouseJoint*)world->CreateJoint(&def);
 	}
-
-	// TODO 3: If the player keeps pressing the mouse button, update
-	// target position and draw a red line between both anchor points
 	else if (mouse_joint && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
 		mouse_joint->SetTarget(pMousePosition);
 		b2Vec2 anchorPosition = mouse_joint->GetBodyB()->GetPosition();
@@ -312,8 +310,6 @@ update_status ModulePhysics::PostUpdate()
 		
 		DrawLine(anchorPosition.x, anchorPosition.y, mousePosition.x, mousePosition.y, RED);
 	}
-
-	// TODO 4: If the player releases the mouse button, destroy the joint
 	else if (mouse_joint && IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
 		world->DestroyJoint(mouse_joint);
 		mouse_joint = nullptr;
