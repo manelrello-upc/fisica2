@@ -5,6 +5,7 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 
+// TODO 1: Create an enum to represent physics categories for collision detection
 enum PhysicCategory
 {
 	DEFAULT =	1 << 0,
@@ -14,6 +15,7 @@ enum PhysicCategory
 	BIKE =		1 << 4
 };
 
+// TODO 4: Create an enum to define different physics groups
 enum PhysicGroup {
 	LAND = 1,
 };
@@ -70,6 +72,13 @@ public:
 private:
 	Texture2D texture;
 };
+
+// TODO 3: Set Category and Mask to each entity
+// * Planes should not collide with other vehicles.
+// * Bikes and cars should collide with bikes and cars.
+// * Ships should collide with ships
+
+// TODO 6: Remove Mask for bikes and cars and set the groupIndex to LAND
 
 class Plane : public Box {
 public:
